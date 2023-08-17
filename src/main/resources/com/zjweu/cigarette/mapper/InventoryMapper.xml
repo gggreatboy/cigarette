@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.InventoryMapper">
+
+    <!--新增一项商品时，同步增加一条库存 -->
+    <insert id="insert">
+        insert into inventory(inventory_com_id, inventory_com_name,inventory_number)
+        values (#{inventoryComId},#{inventoryComName},#{inventoryNumber})
+    </insert>
+
+    <!--根据商品id更新库存信息(可更新库存量、供应商) -->
+    <update id="update">
+        update inventory
+        <set>
+            <if test="inventoryNumber != null ">
+                inventory_number = #{inventoryNumber},
+            </if>
+            <if test="inventoryComProvider != null ">
+                inventory_com_provider = #{inventoryComProvider}
+            </if>
+        </set>
+        where inventory_com_id= #{inventoryComId}
+    </update>
+
+    <!--根据id删除对应库存，在删除商品时使用-->
+    <delete id="deleteByComId">
+        delete
+        from inventory
+        where inventory_com_id in
+        <foreach collection="collection" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <!--根据商品id查找库存信息 -->
+    <select id="getByComId" resultType="com.zjweu.cigarette.pojo.Inventory">
+        select *
+        from inventory
+        where inventory_com_id = #{comId}
+    </select>
+
+    <!--分页查询库存列表-->
+    <select id="list" resultType="com.zjweu.cigarette.pojo.Inventory">
+        select  *
+        from inventory
+        <where>
+            <if test="comName!=null">
+                inventory_com_name like concat('%',#{comName},'%')
+            </if>
+            <if test="comProvider!=null">
+                and inventory_com_provider like concat('%',#{comProvider},'%')
+            </if>
+            <if test="ComNumberLow!=null and ComNumberHigh!=null">
+                and inventory_number between #{ComNumberLow} and #{ComNumberHigh}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

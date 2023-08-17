@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.UserMapper">
+
+    <!--更新用户信息-->
+    <update id="update">
+        update userinfo
+        <set>
+            <if test="userBanci != null ">
+                user_banci = #{userBanci},
+            </if>
+            <if test="userCategory != null">
+                user_category = #{userCategory}
+            </if>
+        </set>
+        where user_id= #{userId}
+    </update>
+
+    <!--根据id批量删除用户-->
+    <delete id="delete">
+        delete
+        from userinfo
+        where user_id in
+        <foreach collection="collection" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--根据用户组批量删除用户-->
+    <delete id="deleteByCategoryId">
+        delete
+        from userinfo
+        where user_category=#{id}
+    </delete>
+
+    <!--根据ID查询用户信息-->
+    <select id="getById" resultType="com.zjweu.cigarette.pojo.User">
+        select *
+        from userinfo
+        where user_id = #{userId}
+    </select>
+
+    <!--新增用户-->
+    <insert id="insert">
+        insert into userinfo(user_name, user_password, user_age, user_banci,user_category)
+        values(#{userName},#{userPasswoard},#{userAge},#{userBanci},#{userCategory})
+    </insert>
+
+    <!--条件查询-->
+    <select id="list" resultType="com.zjweu.cigarette.pojo.User">
+        select  *
+        from userinfo
+        <where>
+            <if test="userName!=null">
+                user_name like concat('%',#{userName},'%')
+            </if>
+            <if test="userAge!=null">
+                and user_age=#{userAge}
+            </if>
+            <if test="userBanci!=null">
+                and user_banci=#{userBanci}
+            </if>
+            <if test="userCategory!=null">
+                and user_category=#{userCategory}
+            </if>
+        </where>
+    </select>
+
+    <!--根据用户名,密码,班次查询用户-->
+    <select id="getByUsernameAndPassword" resultType="com.zjweu.cigarette.pojo.User">
+        select *
+        from userinfo
+        where user_name=#{userName}
+          and user_password=#{userPassword}
+          and user_banci=#{userBanci};
+    </select>
+</mapper>

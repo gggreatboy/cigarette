@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.InventoryForwardMapper">
+
+    <insert id="insert">
+        insert into forward(forward_com_id, forward_com_name, forward_com_unit, sum, forward_people, forward_time)
+        values (#{forwardComId},#{forwardComName},#{forwardComUnit},#{sum},#{forwardPeople},#{forwardTime})
+    </insert>
+
+
+
+    <delete id="deleteById">
+        delete
+        from forward
+        where forward_id in
+        <foreach collection="collection" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="list" resultType="com.zjweu.cigarette.pojo.Forward">
+        select *
+        from forward
+        <where>
+            <if test="comName!=null">
+                forward_com_name like concat('%',#{comName},'%')
+            </if>
+            <if test="people!=null">
+                and forward_people like concat('%',#{people},'%')
+            </if>
+            <if test="begin!=null and end!=null">
+                and forward_time between #{begin} and #{end}
+            </if>
+        </where>
+        order by forward_time desc
+    </select>
+
+
+    <select id="getById" resultType="com.zjweu.cigarette.pojo.Forward">
+        select *
+        from forward
+        where forward_id=#{id}
+    </select>
+
+
+</mapper>

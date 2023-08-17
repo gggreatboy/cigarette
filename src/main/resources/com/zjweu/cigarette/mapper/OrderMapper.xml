@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.OrderMapper">
+
+
+    <insert id="insert">
+        insert into `order`(order_time, order_user_id, order_money, order_pay)
+        values (#{orderTime},#{orderUserId},#{orderMoney},#{orderPay})
+    </insert>
+
+    <delete id="deleteById">
+        delete
+        from `order`
+        where order_id in
+        <foreach collection="collection" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="getById" resultType="com.zjweu.cigarette.pojo.Order">
+        select *
+        from `order`
+        where order_id = #{orderId}
+    </select>
+
+
+    <select id="list" resultType="com.zjweu.cigarette.pojo.Order">
+        select *
+        from `order`
+        <where>
+            <if test="orderUserId!=null">
+                order_user_id=#{orderUserId}
+            </if>
+            <if test="orderPay!=null">
+                and order_pay=#{orderPay}
+            </if>
+            <if test="begin!=null and end!=null">
+                and order_time between #{begin} and #{end}
+            </if>
+            <if test="low!=null and high!=null">
+                and order_money between #{low} and #{high}
+            </if>
+            <if test="low!=null and high==null">
+                and order_money &gt;= #{low}
+            </if>
+            <if test="low==null and high!=null">
+                and order_money &lt;= #{high}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
+
+    <!--查询总付款和-->
+    <select id="getAllMoney" resultType="java.math.BigDecimal">
+        select sum(order_money)
+        from `order`
+    </select>
+
+    <!--查询查询各个收款渠道收款量-->
+    <select id="getMoneyByWay" resultType="java.util.Map">
+        select order_pay,sum(order_money)
+        from `order`
+        group by order_pay
+    </select>
+
+
+</mapper>

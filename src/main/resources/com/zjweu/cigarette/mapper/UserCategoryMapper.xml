@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.UserCategoryMapper">
+
+    <update id="modifyCategory">
+        update category
+        <set>
+            <if test="categoryName != null and categoryName != ''">
+                category_name = #{categoryName},
+            </if>
+
+            <if test="categoryPermission != null and categoryPermission!= ''">
+                category_permission = #{categoryPermission}
+            </if>
+        </set>
+        where category_id = #{categoryId}
+    </update>
+
+    <delete id="deleteById">
+        delete
+        from category
+        where category_id = #{id}
+    </delete>
+
+
+</mapper>

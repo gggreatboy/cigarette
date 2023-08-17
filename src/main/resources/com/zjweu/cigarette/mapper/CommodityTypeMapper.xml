@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.CommodityTypeMapper">
+
+
+    <insert id="insert">
+        insert into type(type_flag, type_name, type_time, type_big)
+        values (#{typeFlag},#{typeName},#{typeTime},#{typeBig})
+    </insert>
+
+    <!--更新商品的类别-->
+    <update id="update">
+        update type
+        <set>
+            <if test="typeName != null ">
+                type_name = #{typeName},
+            </if>
+            <if test="typeBig != null">
+                type_big = #{typeBig}
+            </if>
+        </set>
+        where user_id= #{userId}
+    </update>
+
+
+    <!--根据类别id批量删除商品类别-->
+    <delete id="deleteById">
+        delete
+        from type
+        where type.type_id in
+        <foreach collection="collection" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="getById" resultType="com.zjweu.cigarette.pojo.CigaretteType">
+        select *
+        from type
+        where type_id = #{typeId}
+    </select>
+
+
+    <!--分页查询商品的类别-->
+    <select id="list" resultType="com.zjweu.cigarette.pojo.CigaretteType">
+        select  *
+        from type
+        <where>
+            <if test="typeName!=null">
+                type_name like concat('%',#{typeName},'%')
+            </if>
+            <if test="typeFlag!=null">
+                and type_flag=#{typeFlag}
+            </if>
+            <if test="typeBig!=null">
+                and type_big=#{typeBig}
+            </if>
+        </where>
+    </select>
+
+    <!--查询每个大类中包含的小类个数-->
+    <select id="smallInBig" resultType="java.util.Map">
+        select  type_big,count(*)-1
+        from type
+        group by type_big
+    </select>
+
+
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zjweu.cigarette.mapper.CommodityMapper">
+    <!--新增一个商品 -->
+    <insert id="insert">
+        insert into commodity(com_name, com_code1, com_code2, com_unit, com_type1, com_type2, com_retail, com_cost,com_discount)
+        values(#{comName},#{comCode1},#{comCode2},#{comUnit},#{comType1},#{comType2},#{comRetail},#{comCost},#{comDiscount})
+    </insert>
+
+    <!--更新商品信息-->
+    <update id="update">
+        update commodity
+        <set>
+            <if test="comCode1 != null ">
+                com_code1 = #{comCode1},
+            </if>
+            <if test="comCode2 != null">
+                com_code2 = #{comCode2},
+            </if>
+            <if test="comType1 != null ">
+                com_type1 = #{comType1},
+            </if>
+            <if test="comType2 != null">
+                com_type2 = #{comType2},
+            </if>
+            <if test="comRetail != null ">
+                com_retail = #{comRetail},
+            </if>
+            <if test="comCost != null">
+                com_cost = #{comCost}
+            </if>
+            <if test="comDiscount != null">
+                com_discount = #{comDiscount}
+            </if>
+        </set>
+        where user_id= #{userId}
+    </update>
+
+    <!--根据id批量删除商品-->
+    <delete id="deleteByComId">
+        delete
+        from commodity
+        where com_id in
+        <foreach collection="collection" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--根据商品id查询一个商品 -->
+    <select id="getById" resultType="com.zjweu.cigarette.pojo.Commodity">
+        select *
+        from commodity
+        where com_id = #{comId}
+    </select>
+
+    <!--条件查询-->
+    <select id="list" resultType="com.zjweu.cigarette.pojo.Commodity">
+        select  *
+        from commodity
+        <where>
+            <if test="comName!=null">
+                com_name like concat('%',#{comName},'%')
+            </if>
+            <if test="comCode1!=null">
+                and com_code1 like concat('%',#{comCode1},'%')
+            </if>
+            <if test="comCode2!=null">
+                and com_code2 like concat('%',#{comCode2},'%')
+            </if>
+            <if test="comType1!=null">
+                and com_type1=#{comType1}
+            </if>
+        </where>
+    </select>
+
+    <!--计算每个小类中含有的商品数-->
+    <select id="comInSmall" resultType="java.util.Map">
+        select  com_type2,count(*)
+        from commodity
+        group by com_type2
+    </select>
+
+
+</mapper>
